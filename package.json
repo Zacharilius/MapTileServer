@@ -1,0 +1,30 @@
+{
+  "name": "maptileserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zacharilius/MapTileServer.git"
+  },
+  "keywords": [
+    "map",
+    "tile",
+    "gis"
+  ],
+  "author": "Zacharilius",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Zacharilius/MapTileServer/issues"
+  },
+  "homepage": "https://github.com/Zacharilius/MapTileServer#readme",
+  "dependencies": {
+    "mapnik": "^3.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.12.1"
+  }
+}
