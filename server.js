@@ -1,4 +1,7 @@
-// modules
+/* =============================================================================
+    Modules
+*/
+
 const http = require('http')
     , express = require('express')
     , fs = require('fs')
@@ -7,7 +10,10 @@ const http = require('http')
     , mapnik = require('mapnik')
     , mercator = require('./sphericalmercator');
 
-// config data
+/* =============================================================================
+    Config data
+*/
+
 const hostname = '127.0.0.1'
     , port = 8080
     , TILE_SIZE = 256;
@@ -16,6 +22,10 @@ const app = express();
 
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins, 'shape.input'));
 
+/* =============================================================================
+    Routing and views.
+*/
+
 app.use(express.static('public'))
 
 app.get('/', function (req, res) {
@@ -23,24 +33,31 @@ app.get('/', function (req, res) {
         res.writeHead(200, {'Content-Type': 'text/html'});
         res.end(fs.readFileSync('./index.html'));
     } catch (err) {
-        res.end('Not found: ' + req.url);
+
+        res.end('Error: ', err);
     }
 });
 
-app.get('/admin/:urlId/:z/:x/:y.png', function (req, res) {
-    console.log(req.params);  // FIXME
-    let [urlId, z, x, y] = [req.params.urlId, req.params.z, req.params.x, req.params.y];
-    let name = 'admin' + urlId;
+app.get('/api/tiles', function (req, res) {
+    try {
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify({data: getTileInfos()}));
+    } catch (err) {
+        res.writeHead(500);
+        res.end('Error: ', err);
+    }
+});
+
+app.get('/api/tiles/:tileId/:z/:x/:y.png', function (req, res) {
+    let [tileId, z, x, y] = [req.params.tileId, req.params.z, req.params.x, req.params.y];
 
     const map = new mapnik.Map(TILE_SIZE, TILE_SIZE);
 
     let bbox = mercator.xyz_to_envelope(+x,+y,+z, false);
 
     map.bufferSize = 64;
-    map.load(`./map-data/style-${name}.xml`, (err, map) => {
-        if (err) {
-            throw err;
-        }
+    map.load(`./map-data/${tileId}.xml`, (err, map) => {
+        if (err) throw err;
         const mapnikImage = new mapnik.Image(TILE_SIZE, TILE_SIZE);
 
         map.extent = bbox;
@@ -56,9 +73,39 @@ app.get('/admin/:urlId/:z/:x/:y.png', function (req, res) {
     });
 });
 
+// Server init
 app.listen(port, function() {
     console.log(`Server listening at: http://${hostname}:${port}/`);
 });
+
+/* =============================================================================
+    Database
+*/
+
+function getTileInfos() {
+    return database.tiles;
+}
+
+const database = {
+    'tiles': [
+        {
+            'title': 'Country Boundaries',
+            'name': 'ne_110m_countries'
+        },
+        {
+            'title': 'USA State Boundaries',
+            'name': 'ne_110m_usa_state_boundaries'
+        },
+        {
+            'title': 'Seattle Neighborhoods',
+            'name': 'seattle_neighborhoods'
+        },
+    ]
+}
+
+/* =============================================================================
+    Util
+*/
 
 /**
  * Save the render (PNG) image to create tiles
@@ -72,7 +119,7 @@ function toSaveImage(args) {
         dir = `./${name}/${z}/${x}`,
         png_path = `${dir}/${y}.png`;
 
-    if(!fs.existsSync(png_path)){
+    if (!fs.existsSync(png_path)){
         makeDir(dir);
         image.save(png_path, 'png32');
     }

@@ -8,7 +8,7 @@
   <Layer name="world" srs="+init=epsg:4326">
     <StyleName>polygons</StyleName>
     <Datasource>
-      <Parameter name="file">./ne_110m_admin_1_states_provinces.shp</Parameter>
+      <Parameter name="file">./ne_110m_usa_state_boundaries.shp</Parameter>
       <Parameter name="type">shape</Parameter>
     </Datasource>
   </Layer>

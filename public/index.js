@@ -1,22 +1,32 @@
 window.addEventListener('load', init);
 
 function init() {
-    var admin0url = '/admin/0/{z}/{x}/{y}.png';
-    var admin1url = '/admin/1/{z}/{x}/{y}.png';
-
-    var admin0 = L.tileLayer(admin0url);
-    var admin1 = L.tileLayer(admin1url);
-
-    var map = L.map('map', {
+    window.mts.map = L.map('map', {
         center: [40, -80],
-        zoom: 1,
-        layers: [admin0]
+        zoom: 1
     });
 
-    var layers = {
-        "Admin 0": admin0,
-        "USA Admin 1": admin1
-    };
+    getTileInfos();
+}
 
-    L.control.layers(null,layers).addTo(map);
+function getTileInfos() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        window.mts.tileInfos = JSON.parse(this.responseText).data;  // Store for debugging
+        addTileLayersToMap(window.mts.tileInfos);
+    }
+  };
+  xhttp.open('GET', '/api/tiles', true);
+  xhttp.send();
+}
+
+function addTileLayersToMap(tileInfos) {
+    layers = {}
+    for (var i in tileInfos) {
+        var tileInfo = tileInfos[i];
+        layers[tileInfo.title] = L.tileLayer('/api/tiles/' + tileInfo.name + '/{z}/{x}/{y}.png');
+    }
+
+    L.control.layers(null, layers).addTo(window.mts.map);
 }
