@@ -26,7 +26,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins, 'shape
     Routing and views.
 */
 
-app.use(express.static('public'))
+app.use('/static', express.static('public'))
 
 app.get('/', function (req, res) {
     try {

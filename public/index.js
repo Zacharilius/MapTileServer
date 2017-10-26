@@ -22,7 +22,7 @@ function getTileInfos() {
 }
 
 function addTileLayersToMap(tileInfos) {
-    layers = {}
+    var layers = {}
     for (var i in tileInfos) {
         var tileInfo = tileInfos[i];
         layers[tileInfo.title] = L.tileLayer('/api/tiles/' + tileInfo.name + '/{z}/{x}/{y}.png');
