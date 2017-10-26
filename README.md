@@ -3,4 +3,4 @@
 ## Development
 
 Run Development Server
-`nodemon ./server.js`
+`npm run develop`

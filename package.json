@@ -1,10 +1,12 @@
-  {
+{
   "name": "maptileserver",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
   "scripts": {
     "compile": "webpack",
+    "start": "node server.js",
+    "develop": "nodemon ./server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -29,7 +31,8 @@
     "babel-preset-react": "^6.24.1",
     "express": "^4.16.2",
     "mapnik": "^3.6.2",
-    "webpack": "^3.8.1"
+    "webpack": "^3.8.1",
+    "webpack-dev-middleware": "^1.12.0"
   },
   "devDependencies": {
     "nodemon": "^1.12.1"

@@ -3,10 +3,13 @@
 */
 
 const http = require('http')
-    , express = require('express')
     , fs = require('fs')
     , url = require('url')
     , path = require('path')
+    , webpackDevMiddleware = require('webpack-dev-middleware')
+    , webpack = require('webpack')
+    , webpackConfig = require('./webpack.config.js')
+    , express = require('express')
     , mapnik = require('mapnik')
     , mercator = require('./sphericalmercator');
 
@@ -14,11 +17,13 @@ const http = require('http')
     Config data
 */
 
+
 const hostname = '127.0.0.1'
     , port = 8080
     , TILE_SIZE = 256;
 
 const app = express();
+const compiler = webpack(webpackConfig);
 
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins, 'shape.input'));
 
@@ -26,14 +31,23 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins, 'shape
     Routing and views.
 */
 
-app.use('/static', express.static('public'))
+app.use('/static', express.static(__dirname + '/public'));
+
+app.use(webpackDevMiddleware(compiler, {
+    hot: true,
+    filename: 'bundle.js',
+    publicPath: '/',
+    stats: {
+        colors: true,
+    },
+    historyApiFallback: true,
+}));
 
 app.get('/', function (req, res) {
     try {
         res.writeHead(200, {'Content-Type': 'text/html'});
-        res.end(fs.readFileSync('./index.html'));
+        res.end(fs.readFileSync('./public/index.html'));
     } catch (err) {
-
         res.end('Error: ', err);
     }
 });
