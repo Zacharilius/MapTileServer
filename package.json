@@ -22,6 +22,9 @@
   },
   "homepage": "https://github.com/Zacharilius/MapTileServer#readme",
   "dependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-latest": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
     "express": "^4.16.2",
     "mapnik": "^3.6.2"
   },
