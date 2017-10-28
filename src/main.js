@@ -1,32 +1,40 @@
-window.addEventListener('load', init);
+import React from 'react';
+import { render } from 'react-dom';
+import {
+  LayersControl,
+  Map,
+  TileLayer,
+} from 'react-leaflet';
 
-function init() {
-    window.mts.map = L.map('map', {
-        center: [40, -80],
-        zoom: 1
-    });
+const { BaseLayer, Overlay } = LayersControl
+const position = [40, -80];
+const zoom = 1;
+const map = (
+  <Map center={position} zoom={zoom}>
+        <LayersControl position="topright">
+          <BaseLayer checked name="OpenStreetMap.Mapnik">
+            <TileLayer
+              attribution="&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+          </BaseLayer>
+          <BaseLayer name="Country Boundaries">
+            <TileLayer
+              url="/api/tiles/ne_110m_countries/{z}/{x}/{y}.png"
+            />
+          </BaseLayer>
+          <BaseLayer name="USA State Boundaries">
+            <TileLayer
+              url="/api/tiles/ne_110m_usa_state_boundaries/{z}/{x}/{y}.png"
+            />
+          </BaseLayer>
+          <BaseLayer name="Seattle Neighborhoods">
+            <TileLayer
+              url="/api/tiles/seattle_neighborhoods/{z}/{x}/{y}.png"
+            />
+          </BaseLayer>
+        </LayersControl>
+  </Map>
+);
 
-    getTileInfos();
-}
-
-function getTileInfos() {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-        window.mts.tileInfos = JSON.parse(this.responseText).data;  // Store for debugging
-        addTileLayersToMap(window.mts.tileInfos);
-    }
-  };
-  xhttp.open('GET', '/api/tiles', true);
-  xhttp.send();
-}
-
-function addTileLayersToMap(tileInfos) {
-    var layers = {}
-    for (var i in tileInfos) {
-        var tileInfo = tileInfos[i];
-        layers[tileInfo.title] = L.tileLayer('/api/tiles/' + tileInfo.name + '/{z}/{x}/{y}.png');
-    }
-
-    L.control.layers(null, layers).addTo(window.mts.map);
-}
+render(map, document.getElementById('map'));

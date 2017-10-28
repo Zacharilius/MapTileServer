@@ -7,6 +7,7 @@
     "compile": "webpack",
     "start": "node server.js",
     "develop": "nodemon ./server.js",
+    "devWebpack": "webpack --d --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -30,7 +31,11 @@
     "babel-preset-latest": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "express": "^4.16.2",
+    "leaflet": "^1.2.0",
     "mapnik": "^3.6.2",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-leaflet": "^1.7.1",
     "webpack": "^3.8.1",
     "webpack-dev-middleware": "^1.12.0"
   },

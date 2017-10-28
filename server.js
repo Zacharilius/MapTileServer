@@ -17,7 +17,6 @@ const http = require('http')
     Config data
 */
 
-
 const hostname = '127.0.0.1'
     , port = 8080
     , TILE_SIZE = 256;
@@ -33,15 +32,16 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins, 'shape
 
 app.use('/static', express.static(__dirname + '/public'));
 
-app.use(webpackDevMiddleware(compiler, {
-    hot: true,
-    filename: 'bundle.js',
-    publicPath: '/',
-    stats: {
-        colors: true,
-    },
-    historyApiFallback: true,
-}));
+// TODO: Investigate why not bundling on change.
+// app.use(webpackDevMiddleware(compiler, {
+//     hot: true,
+//     filename: 'bundle.js',
+//     publicPath: '/',
+//     stats: {
+//         colors: true,
+//     },
+//     historyApiFallback: true,
+// }));
 
 app.get('/', function (req, res) {
     try {
@@ -52,6 +52,7 @@ app.get('/', function (req, res) {
     }
 });
 
+// TODO: Currently not reachable o the frontend.
 app.get('/api/tiles', function (req, res) {
     try {
         res.writeHead(200, {'Content-Type': 'application/json'});
@@ -96,25 +97,9 @@ app.listen(port, function() {
     Database
 */
 
+// TODO: Store tiles in database
 function getTileInfos() {
-    return database.tiles;
-}
-
-const database = {
-    'tiles': [
-        {
-            'title': 'Country Boundaries',
-            'name': 'ne_110m_countries'
-        },
-        {
-            'title': 'USA State Boundaries',
-            'name': 'ne_110m_usa_state_boundaries'
-        },
-        {
-            'title': 'Seattle Neighborhoods',
-            'name': 'seattle_neighborhoods'
-        },
-    ]
+    return {};
 }
 
 /* =============================================================================
