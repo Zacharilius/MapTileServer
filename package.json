@@ -33,6 +33,7 @@
     "express": "^4.16.2",
     "leaflet": "^1.2.0",
     "mapnik": "^3.6.2",
+    "mkdirp": "^0.5.1",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-leaflet": "^1.7.1",

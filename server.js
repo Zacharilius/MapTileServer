@@ -1,17 +1,18 @@
 /* =============================================================================
-    Modules
+    Imports
 */
 
-const http = require('http')
-    , fs = require('fs')
-    , url = require('url')
-    , path = require('path')
-    , webpackDevMiddleware = require('webpack-dev-middleware')
-    , webpack = require('webpack')
-    , webpackConfig = require('./webpack.config.js')
-    , express = require('express')
-    , mapnik = require('mapnik')
-    , mercator = require('./sphericalmercator');
+const http = require('http'),
+    fs = require('fs'),
+    url = require('url'),
+    path = require('path'),
+    webpackDevMiddleware = require('webpack-dev-middleware'),
+    webpack = require('webpack'),
+    webpackConfig = require('./webpack.config.js'),
+    express = require('express'),
+    mapnik = require('mapnik'),
+    mercator = require('./sphericalmercator'),
+    mkdirp = require('mkdirp');
 
 /* =============================================================================
     Config data
@@ -52,7 +53,7 @@ app.get('/', function (req, res) {
     }
 });
 
-// TODO: Currently not reachable o the frontend.
+// TODO: Implement
 app.get('/api/tiles', function (req, res) {
     try {
         res.writeHead(200, {'Content-Type': 'application/json'});
@@ -67,23 +68,21 @@ app.get('/api/tiles/:tileId/:z/:x/:y.png', function (req, res) {
     let [tileId, z, x, y] = [req.params.tileId, req.params.z, req.params.x, req.params.y];
 
     const map = new mapnik.Map(TILE_SIZE, TILE_SIZE);
-
-    let bbox = mercator.xyz_to_envelope(+x,+y,+z, false);
-
     map.bufferSize = 64;
     map.load(`./map-data/${tileId}.xml`, (err, map) => {
         if (err) throw err;
-        const mapnikImage = new mapnik.Image(TILE_SIZE, TILE_SIZE);
 
+        let mapnikImage = new mapnik.Image(TILE_SIZE, TILE_SIZE);
+        let bbox = mercator.xyz_to_envelope(+x,+y,+z, false);
         map.extent = bbox;
         map.render(mapnikImage, (err, image) => {
             if (err) throw err;
 
-            //toSaveImage([name,z,x,y])
+            // TODO: Save images so that they do not need to be recomputed;
+            // saveImage(mapnikImage, [tileId, z, x, y]);
 
             res.writeHead(200, {'Content-Type': 'image/png'});
             res.end(image.encodeSync('png'));
-
         });
     });
 });
@@ -106,29 +105,42 @@ function getTileInfos() {
     Util
 */
 
-/**
- * Save the render (PNG) image to create tiles
- * Important:
- *      - Install package: "npm install mkdirp --save"
- *      - Add the following line in the top:
- *            , mkdirp = require('mkdirp')
- */
-function toSaveImage(args) {
-    let [name,z,x,y] = args,
-        dir = `./${name}/${z}/${x}`,
-        png_path = `${dir}/${y}.png`;
+function getDirPath(args) {
+    let [tileId, z, x, y] = args,
+        dir = `./tiles/${tileId}/${z}/${x}`;
+    return dir
+}
 
-    if (!fs.existsSync(png_path)){
-        makeDir(dir);
-        image.save(png_path, 'png32');
-    }
+function getImagePath(args) {
+    let [tileId, z, x, y] = args,
+        dir = getDirPath(args),
+        pngPath = `${dir}/${y}.png`;
+    return pngPath;
+}
+
+function doesTileExist(args) {
+    var pngPath = getImagePath(args);
+    return fs.existsSync(pngPath);
+}
+
+function getTile(args) {
+    var imagePath = getImagePath(args);
+    var img = fs.readFileSync(imagePath);
+    return img;
 }
 
 /**
- * Valid if exist directory else it create
+ * Save the png if it does not exist.
  */
-function makeDir(dir) {
-    if (!fs.existsSync(dir)){
-        mkdirp.sync(dir);
+function saveImage(image, args) {
+    let dir = getDirPath(args),
+        pngPath = getImagePath(args);
+
+    // TODO: Just save image.
+    if (!doesTileExist(args)){
+        if (!fs.existsSync(dir)) {
+            mkdirp.sync(dir);
+        }
+        image.save(pngPath, 'png32');
     }
 }
