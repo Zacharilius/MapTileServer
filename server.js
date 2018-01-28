@@ -66,25 +66,33 @@ app.get('/api/tiles', function (req, res) {
 
 app.get('/api/tiles/:tileId/:z/:x/:y.png', function (req, res) {
     let [tileId, z, x, y] = [req.params.tileId, req.params.z, req.params.x, req.params.y];
+    let tileArgs = [tileId, z, x, y];
 
-    const map = new mapnik.Map(TILE_SIZE, TILE_SIZE);
-    map.bufferSize = 64;
-    map.load(`./map-data/${tileId}.xml`, (err, map) => {
-        if (err) throw err;
-
-        let mapnikImage = new mapnik.Image(TILE_SIZE, TILE_SIZE);
-        let bbox = mercator.xyz_to_envelope(+x,+y,+z, false);
-        map.extent = bbox;
-        map.render(mapnikImage, (err, image) => {
+    if (doesTileExist(tileArgs)) {
+        // Use computed image
+        var image = getTileImage(tileArgs);
+        res.writeHead(200, {'Content-Type': 'image/png'});
+        res.end(image);
+    } else {
+        const map = new mapnik.Map(TILE_SIZE, TILE_SIZE);
+        map.bufferSize = 64;
+        map.load(`./map-data/${tileId}.xml`, (err, map) => {
             if (err) throw err;
 
-            // TODO: Save images so that they do not need to be recomputed;
-            // saveImage(mapnikImage, [tileId, z, x, y]);
+            let mapnikImage = new mapnik.Image(TILE_SIZE, TILE_SIZE);
+            let bbox = mercator.xyz_to_envelope(+x,+y,+z, false);
+            map.extent = bbox;
+            map.render(mapnikImage, (err, image) => {
+                if (err) throw err;
 
-            res.writeHead(200, {'Content-Type': 'image/png'});
-            res.end(image.encodeSync('png'));
+                saveTileImage(mapnikImage, tileArgs);
+
+                res.writeHead(200, {'Content-Type': 'image/png'});
+                res.end(image.encodeSync('png'));
+            });
         });
-    });
+    }
+
 });
 
 // Server init
@@ -105,42 +113,36 @@ function getTileInfos() {
     Util
 */
 
-function getDirPath(args) {
+function getTileDirPath(args) {
     let [tileId, z, x, y] = args,
         dir = `./tiles/${tileId}/${z}/${x}`;
     return dir
 }
 
-function getImagePath(args) {
+function getTileImagePath(args) {
     let [tileId, z, x, y] = args,
-        dir = getDirPath(args),
+        dir = getTileDirPath(args),
         pngPath = `${dir}/${y}.png`;
     return pngPath;
 }
 
 function doesTileExist(args) {
-    var pngPath = getImagePath(args);
+    var pngPath = getTileImagePath(args);
     return fs.existsSync(pngPath);
 }
 
-function getTile(args) {
-    var imagePath = getImagePath(args);
+function getTileImage(args) {
+    var imagePath = getTileImagePath(args);
     var img = fs.readFileSync(imagePath);
     return img;
 }
 
-/**
- * Save the png if it does not exist.
- */
-function saveImage(image, args) {
-    let dir = getDirPath(args),
-        pngPath = getImagePath(args);
+function saveTileImage(image, args) {
+    let dir = getTileDirPath(args),
+        pngPath = getTileImagePath(args);
 
-    // TODO: Just save image.
-    if (!doesTileExist(args)){
-        if (!fs.existsSync(dir)) {
-            mkdirp.sync(dir);
-        }
-        image.save(pngPath, 'png32');
+    if (!fs.existsSync(dir)) {
+        mkdirp.sync(dir);
     }
+    image.save(pngPath, 'png32');
 }
