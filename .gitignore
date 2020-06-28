@@ -1,3 +1,6 @@
+# Typescript
+dist/
+
 # Project
 public/bundle.js
 tiles/*

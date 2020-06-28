@@ -1,9 +1,10 @@
-const fs = require('fs');
-const path = require('path');
-const express = require('express');
-const mapnik = require('mapnik');
-const mercator = require('./sphericalmercator');
-const mkdirp = require('mkdirp');
+import * as fs from 'fs';
+import * as path from 'path';
+import * as express from 'express';
+import * as mapnik from 'mapnik';
+import * as mkdirp from 'mkdirp';
+
+import * as mercator from './sphericalmercator';
 
 /* =============================================================================
 	Config data
@@ -54,20 +55,21 @@ app.get('/api/tile/:tileId/:z/:x/:y.png', (req, res) => {
 		res.end(image);
 	} else {
 		const map = new mapnik.Map(TILE_SIZE, TILE_SIZE);
-		map.bufferSize = 64;
+		// map.bufferSize = 64;
 		map.load(`./map-data/${tileId}.xml`, (err, map) => {
 			if (err) throw err;
 
 			let mapnikImage = new mapnik.Image(TILE_SIZE, TILE_SIZE);
 			let bbox = mercator.xyz_to_envelope(+x,+y,+z, false);
-			map.extent = bbox;
+			// map.extent = bbox;
 			map.render(mapnikImage, (err, image) => {
 				if (err) throw err;
 
 				saveTileImage(mapnikImage, tileArgs);
 
 				res.writeHead(200, {'Content-Type': 'image/png'});
-				res.end(image.encodeSync('png'));
+				// res.end(image.encodeSync('png'));
+				res.end(image);
 			});
 		});
 	}
