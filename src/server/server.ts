@@ -44,6 +44,26 @@ app.get('/api/tiles', (req, res) => {
 	}
 });
 
+declare interface MapnikImage {
+    new(x: number, y: number): () => void;
+	encode(type: string, callback?: (err: Error, buffer: Buffer) => void): void;
+	encodeSync(type: string);
+    getData(): Buffer;
+    save(fp: string): () => void;
+    open(fp: string): () => void;
+}
+
+declare type BBox = [number, number, number, number]
+
+declare interface MapnikMap {
+    constructor(x: number, y: number)
+    load(xml: string, callback?: (err: Error, map: MapnikMap) => void): void;
+    render(images: MapnikImage, callback?: (err: Error, map: MapnikImage) => void): void;
+    bufferSize?: number
+    extent?: BBox;
+
+}
+
 app.get('/api/tile/:tileId/:z/:x/:y.png', (req, res) => {
 	let [tileId, z, x, y] = [req.params.tileId, req.params.z, req.params.x, req.params.y];
 	let tileArgs = [tileId, z, x, y];
@@ -54,22 +74,21 @@ app.get('/api/tile/:tileId/:z/:x/:y.png', (req, res) => {
 		res.writeHead(200, {'Content-Type': 'image/png'});
 		res.end(image);
 	} else {
-		const map = new mapnik.Map(TILE_SIZE, TILE_SIZE);
-		// map.bufferSize = 64;
+		const map: MapnikMap = new mapnik.Map(TILE_SIZE, TILE_SIZE);
+		map.bufferSize = 64;
 		map.load(`./map-data/${tileId}.xml`, (err, map) => {
 			if (err) throw err;
 
-			let mapnikImage = new mapnik.Image(TILE_SIZE, TILE_SIZE);
+			let mapnikImage: MapnikImage = new mapnik.Image(TILE_SIZE, TILE_SIZE);
 			let bbox = mercator.xyz_to_envelope(+x,+y,+z, false);
-			// map.extent = bbox;
+			map.extent = bbox;
 			map.render(mapnikImage, (err, image) => {
 				if (err) throw err;
 
 				saveTileImage(mapnikImage, tileArgs);
 
 				res.writeHead(200, {'Content-Type': 'image/png'});
-				// res.end(image.encodeSync('png'));
-				res.end(image);
+				res.end(image.encodeSync('png'));
 			});
 		});
 	}
