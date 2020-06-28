@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as mapnik from 'mapnik';
 import * as mkdirp from 'mkdirp';
 
-import * as mercator from './sphericalmercator';
+import * as mercator from './spherical-mercator';
 
 const TILE_SIZE: number = 256;
 
@@ -15,14 +15,14 @@ declare interface MapnikImage {
 	open(fp: string): () => void;
 }
 
-declare type BBox = [number, number, number, number]
+declare type BoundingBox = [number, number, number, number]
 
 declare interface MapnikMap {
 	constructor(x: number, y: number)
 	load(xml: string, callback?: (err: Error, map: MapnikMap) => void): void;
 	render(images: MapnikImage, callback?: (err: Error, map: MapnikImage) => void): void;
 	bufferSize?: number
-	extent?: BBox;
+	extent?: BoundingBox;
 
 }
 
@@ -39,8 +39,8 @@ export const getTile = async (tileId: string, z: string, x: string, y: string): 
 				};
 	
 				let mapnikImage: MapnikImage = new mapnik.Image(TILE_SIZE, TILE_SIZE);
-				let bbox = mercator.xyz_to_envelope(+x,+y,+z, false);
-				map.extent = bbox;
+				let boundingBox = mercator.xyz_to_envelope(+x,+y,+z, false);
+				map.extent = boundingBox;
 				map.render(mapnikImage, (err, image) => {
 					if (err) {
 						reject(err)

@@ -24,7 +24,7 @@ function SphericalMercator() {
 		this.zc.push(size / 2);
 		this.Ac.push(size);
 		size *= 2;
-	}
+    }
 }
 
 /**
