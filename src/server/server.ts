@@ -42,7 +42,6 @@ app.get('/api/tile/:tileId/:z/:x/:y.png', async (req, res) => {
 	res.end(image);
 });
 
-// Server init
 app.listen(port, () => {
 	console.log(`Server listening at: http://${hostname}:${port}/`);
 });
