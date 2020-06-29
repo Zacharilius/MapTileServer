@@ -1,6 +1,7 @@
 const path = require('path');
 
 module.exports = {
+  mode: 'development',
   context: path.join(__dirname, 'src'),
   entry: [
     './client/main.js',
