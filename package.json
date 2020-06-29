@@ -2,12 +2,14 @@
   "name": "maptileserver",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "dist/server.js",
   "scripts": {
-    "compile": "webpack",
-    "start": "node server.js",
-    "develop": "nodemon ./server.js",
-    "devWebpack": "webpack --d --watch",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "webpack",
+    "build:server": "tsc",
+    "server:watch": "nodemon --watch 'src/**/*' -e ts,js --exec 'npm run build && npm run start'",
+    "server:webpack": "webpack --d --watch",
+    "start": "node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -41,6 +43,10 @@
     "webpack-dev-middleware": "^1.12.0"
   },
   "devDependencies": {
-    "nodemon": "^1.12.1"
+    "@types/express": "^4.17.6",
+    "@types/mkdirp": "^1.0.1",
+    "@types/node": "^14.0.14",
+    "nodemon": "^1.12.1",
+    "typescript": "^3.9.5"
   }
 }
