@@ -11,6 +11,8 @@ declare type LatitudeLongitude = [number, number]
 
 declare type Pixels = [number, number]
 
+export const PROJ_4: string = '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over'
+
 /**
  * SphericalMercator constructor: precaches calculations
  * for fast tile lookups
@@ -37,9 +39,8 @@ export class SphericalMercator {
         this.size = 256
         this.levels = 18
 
-        const proj4: string = '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over'
         // Constructs a new projection from its PROJ.4 string representation.
-        this.mercator = new mapnik.Projection(proj4)
+        this.mercator = new mapnik.Projection(PROJ_4)
         for (var d = 0; d < this.levels; d++) {
             this.Bc.push(size / 360)
             this.Cc.push(size / (2 * Math.PI))
