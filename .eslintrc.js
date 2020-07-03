@@ -4,7 +4,8 @@ module.exports = {
         "es6": true
     },
     "extends": [
-        "eslint:recommended", "plugin:react/recommended"
+        "eslint:recommended",
+        "plugin:react/recommended"
     ],
     "globals": {
         "Atomics": "readonly",
@@ -23,5 +24,12 @@ module.exports = {
         "react"
     ],
     "rules": {
+        "semi": ["error", "never"],
+        "no-trailing-spaces": "error"
+    },
+    "settings": {
+        "react": {
+            "version": "detect",
+        }
     }
 };

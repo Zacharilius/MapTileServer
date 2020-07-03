@@ -3,10 +3,10 @@ import { render } from 'react-dom'
 import {
     LayersControl,
     Map,
-    TileLayer
+    TileLayer,
 } from 'react-leaflet'
 
-const Overlay = LayersControl[1];
+const { Overlay } = LayersControl
 const position = [40, -80]
 const zoom = 1
 const map = (
