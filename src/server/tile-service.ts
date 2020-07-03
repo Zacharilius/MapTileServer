@@ -2,26 +2,26 @@ import * as fs from 'fs'
 import * as mapnik from 'mapnik'
 import * as mkdirp from 'mkdirp'
 
-import { BoundingBox, SphericalMercator } from './spherical-mercator' // eslint-disable-line no-unused-vars
+import { BoundingBox, SphericalMercator } from './mercator' // eslint-disable-line no-unused-vars
 
 const TILE_SIZE: number = 256
 const mercator = new SphericalMercator()
 
 declare interface MapnikImage {
-    new(x: number, y: number): () => void;
-    encode(type: string, callback?: (err: Error, buffer: Buffer) => void): void;
-    encodeSync(type: string);
-    getData(): Buffer;
-    save(fp: string): () => void;
-    open(fp: string): () => void;
+    new(x: number, y: number): () => void
+    encode(type: string, callback?: (err: Error, buffer: Buffer) => void): void
+    encodeSync(type: string)
+    getData(): Buffer
+    save(fp: string): () => void
+    open(fp: string): () => void
 }
 
 declare interface MapnikMap {
     constructor(x: number, y: number)
-    load(xml: string, callback?: (err: Error, map: MapnikMap) => void): void;
-    render(images: MapnikImage, callback?: (err: Error, map: MapnikImage) => void): void;
+    load(xml: string, callback?: (err: Error, map: MapnikMap) => void): void
+    render(images: MapnikImage, callback?: (err: Error, map: MapnikImage) => void): void
     bufferSize?: number
-    extent?: BoundingBox;
+    extent?: BoundingBox
 
 }
 
@@ -38,7 +38,7 @@ export const getTile = async (tileId: string, z: string, x: string, y: string): 
                 }
 
                 const mapnikImage: MapnikImage = new mapnik.Image(TILE_SIZE, TILE_SIZE)
-                const boundingBox: BoundingBox = mercator.xyzToMapnikEnvelope(+x, +y, +z, false)
+                const boundingBox: BoundingBox = mercator.xyzToMapnikEnvelope(+x, +y, +z)
                 map.extent = boundingBox
                 map.render(mapnikImage, (err, image) => {
                     if (err) {
@@ -76,8 +76,6 @@ const saveTileImage = (image, tileId: string, z: string, x: string, y: string): 
     const dir = getTileDirPath(tileId, z, x)
     const pngPath = getTileImagePath(tileId, z, x, y)
 
-    if (!fs.existsSync(dir)) {
-        mkdirp.sync(dir)
-    }
+    mkdirp.sync(dir)
     image.save(pngPath, 'png32')
 }

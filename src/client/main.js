@@ -1,14 +1,14 @@
-import React from 'react';
-import { render } from 'react-dom';
+import React from 'react'
+import { render } from 'react-dom'
 import {
     LayersControl,
     Map,
     TileLayer,
-} from 'react-leaflet';
+} from 'react-leaflet'
 
 const { Overlay } = LayersControl
-const position = [40, -80];
-const zoom = 1;
+const position = [40, -80]
+const zoom = 1
 const map = (
     <Map center={position} zoom={zoom}>
         <LayersControl position="topright">
@@ -35,6 +35,6 @@ const map = (
             </Overlay>
         </LayersControl>
     </Map>
-);
+)
 
-render(map, document.getElementById('map'));
+render(map, document.getElementById('map'))

@@ -24,5 +24,12 @@ module.exports = {
         "react"
     ],
     "rules": {
+        "semi": ["error", "never"],
+        "no-trailing-spaces": "error"
+    },
+    "settings": {
+        "react": {
+            "version": "detect",
+        }
     }
 };

@@ -1,10 +1,10 @@
-import * as mapnik from 'mapnik';
+import * as mapnik from 'mapnik'
 
-export declare type BoundingBox = [number, number, number, number];
+export declare type BoundingBox = [number, number, number, number]
 
 declare interface MapnikProjection {
     constructor(proj4: string)
-    forward(boundingBox: BoundingBox): BoundingBox;
+    forward(boundingBox: BoundingBox): BoundingBox
 }
 
 declare type LatitudeLongitude = [number, number]
@@ -18,15 +18,15 @@ export const PROJ_4: string = '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon
  * for fast tile lookups
  */
 export class SphericalMercator {
-    private Bc: Array<number>;
-    private Cc: Array<number>;
-    private zc: Array<number>;
-    private Ac: Array<number>;
-    private DEG_TO_RAD: number;
-    private RAD_TO_DEG: number;
-    private size: number;
-    private levels: number;
-    private mercator: MapnikProjection;
+    private Bc: Array<number>
+    private Cc: Array<number>
+    private zc: Array<number>
+    private Ac: Array<number>
+    private DEG_TO_RAD: number
+    private RAD_TO_DEG: number
+    private size: number
+    private levels: number
+    private mercator: MapnikProjection
 
     constructor () {
         var size = 256
@@ -54,7 +54,7 @@ export class SphericalMercator {
         return Math.min(Math.max(a, b), c)
     }
 
-    private convertLatitudeLongitudeToPixels (latitudeLongitude: LatitudeLongitude, zoom: number): [number, number] {
+    public convertLatitudeLongitudeToPixels (latitudeLongitude: LatitudeLongitude, zoom: number): [number, number] {
         var d = this.zc[zoom]
         var f = this.minmax(Math.sin(this.DEG_TO_RAD * latitudeLongitude[1]), -0.9999, 0.9999)
         var x = Math.round(d + latitudeLongitude[0] * this.Bc[zoom])
@@ -70,10 +70,7 @@ export class SphericalMercator {
         return [latitude, longitude]
     }
 
-    public xyzToMapnikEnvelope (x: number, y: number, zoom: number, TMS_SCHEME: boolean): BoundingBox {
-        if (TMS_SCHEME) {
-            y = (Math.pow(2, zoom) - 1) - y
-        }
+    public xyzToMapnikEnvelope (x: number, y: number, zoom: number): BoundingBox {
         const latitudeLongitude: LatitudeLongitude = [x * this.size, (y + 1) * this.size]
         const pixels: Pixels = [(x + 1) * this.size, y * this.size]
         var boundingBoxPart1 = this.convertPixelsToLatitudeLongitude(latitudeLongitude, zoom)
