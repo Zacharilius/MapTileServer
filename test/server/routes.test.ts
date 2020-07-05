@@ -5,14 +5,13 @@ import { expect } from 'chai'
 import * as proxyquire from 'proxyquire'
 import * as sinon from 'sinon'
 
-let routes
-let app
-
-let getTileStub
-let readFileSyncStub
-let registerDatasourceStub
-
 describe('server', () => {
+    let routes: any
+    let app: any
+
+    let getTileStub: sinon.SinonStub
+    let readFileSyncStub: sinon.SinonStub
+    let registerDatasourceStub: sinon.SinonStub
 
     const INPUT_PLUGINS = 'INPUT_PLUGINS'
 
@@ -49,7 +48,7 @@ describe('server', () => {
 
     describe('/', () => {
         it('request index.html', async () => {
-            const response = await supertest(app).get('/')
+            const response: any = await supertest(app).get('/')
             expect(response.statusCode).equals(200)
             expect(response.type).equals('text/html')
         })
@@ -62,7 +61,7 @@ describe('server', () => {
             const X = 'X'
             const Y = 'Y'
 
-            const response = await supertest(app).get(`/api/tile/${TILE_ID}/${Z}/${X}/${Y}.png`)
+            const response: any = await supertest(app).get(`/api/tile/${TILE_ID}/${Z}/${X}/${Y}.png`)
             expect(response.statusCode).equals(200)
 
             const EXPECTED_ARGS = [TILE_ID, Z, X, Y]

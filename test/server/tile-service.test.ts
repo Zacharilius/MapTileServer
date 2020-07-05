@@ -3,20 +3,20 @@ import * as proxyquire from 'proxyquire'
 import * as sinon from 'sinon'
 
 describe('tile-service: getTile', function() {
-    let TileService
+    let TileService: any
 
     // fs stubs
-    let readFileSyncStub
-    let existsSyncStub
+    let readFileSyncStub: sinon.SinonStub
+    let existsSyncStub: sinon.SinonStub
 
     // mapnik stubs
-    let MapStub
-    let ImageStub
-    let RenderImageStub
-    let MapStubWithRender
+    let MapStub: sinon.SinonStub
+    let ImageStub: sinon.SinonStub
+    let RenderImageStub: any
+    let MapStubWithRender: any
 
     // mkdirp stub
-    let syncStub
+    let syncStub: sinon.SinonStub
 
     beforeEach(() => {
         readFileSyncStub = sinon.stub()
@@ -29,7 +29,7 @@ describe('tile-service: getTile', function() {
             encodeSync: sinon.stub()
         }
         MapStubWithRender = {
-            render: (mapnikImage, callback) => {
+            render: (mapnikImage: any, callback: any) => {
                 callback(null, RenderImageStub)
             }
         }
@@ -52,7 +52,7 @@ describe('tile-service: getTile', function() {
     it('should create a new mapnik image when the tile does not exist', async () => {
         existsSyncStub.returns(false)
         MapStub.returns({
-            load: (maptileFileString, callback) => {
+            load: (maptileFileString: string, callback: any) => {
                 callback(null, MapStubWithRender)
             },
         })
@@ -70,7 +70,7 @@ describe('tile-service: getTile', function() {
 
         existsSyncStub.returns(false)
         MapStub.returns({
-            load: (maptileFileString, callback) => {
+            load: (maptileFileString: string, callback: any) => {
                 callback(new Error(EXPECTED_ERROR_MESSAGE))
             },
         })
@@ -89,12 +89,12 @@ describe('tile-service: getTile', function() {
 
         existsSyncStub.returns(false)
         MapStub.returns({
-            load: (maptileFileString, callback) => {
+            load: (maptileFileString: any, callback: any) => {
                 callback(null, MapStubWithRender)
             },
         })
         MapStubWithRender = {
-            render: (mapnikImage, callback) => {
+            render: (mapnikImage: any, callback: any) => {
                 callback(new Error(EXPECTED_ERROR_MESSAGE))
             }
         }

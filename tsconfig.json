@@ -1,8 +1,14 @@
 {
   "compilerOptions": {
     "outDir": "./dist",
-    "target": "es5"
+    "target": "es5",
+    "noImplicitAny": true,
+    "jsx": "react",
+    "typeRoots" : ["./node_modules/@types", "./types"]
+
   },
-  "include": ["./src/server/**/*"]
+  "include": [
+    "./src/server/**/*"
+  ]
 }
     
