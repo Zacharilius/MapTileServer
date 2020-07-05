@@ -3,12 +3,12 @@ import * as proxyquire from 'proxyquire'
 import * as sinon from 'sinon'
 
 describe('mercator', function() {
-    let SphericalMercator
-    let PROJ_4
+    let SphericalMercator: any
+    let PROJ_4: string
 
     // mapnik stubs
-    let ProjectionStub
-    let ProjectionForwardStub
+    let ProjectionStub: sinon.SinonStub
+    let ProjectionForwardStub: sinon.SinonStub
 
     beforeEach(() => {
         ProjectionForwardStub = sinon.stub()

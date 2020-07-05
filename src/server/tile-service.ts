@@ -2,45 +2,27 @@ import * as fs from 'fs'
 import * as mapnik from 'mapnik'
 import * as mkdirp from 'mkdirp'
 
-import { BoundingBox, SphericalMercator } from './mercator' // eslint-disable-line no-unused-vars
+import { SphericalMercator } from './mercator'
 
 const TILE_SIZE: number = 256
 const mercator = new SphericalMercator()
-
-declare interface MapnikImage {
-    new(x: number, y: number): () => void
-    encode(type: string, callback?: (err: Error, buffer: Buffer) => void): void
-    encodeSync(type: string)
-    getData(): Buffer
-    save(fp: string): () => void
-    open(fp: string): () => void
-}
-
-declare interface MapnikMap {
-    constructor(x: number, y: number)
-    load(xml: string, callback?: (err: Error, map: MapnikMap) => void): void
-    render(images: MapnikImage, callback?: (err: Error, map: MapnikImage) => void): void
-    bufferSize?: number
-    extent?: BoundingBox
-
-}
 
 export const getTile = async (tileId: string, z: string, x: string, y: string): Promise<Buffer> => {
     if (doesTileExist(tileId, z, x, y)) {
         return getTileImage(tileId, z, x, y)
     } else {
-        const map: MapnikMap = new mapnik.Map(TILE_SIZE, TILE_SIZE)
+        const map: mapnik.Map = new mapnik.Map(TILE_SIZE, TILE_SIZE)
         map.bufferSize = 64
         return new Promise((resolve, reject) => {
-            map.load(`./map-data/${tileId}.xml`, (err, map) => {
+            map.load(`./map-data/${tileId}.xml`, (err: Error, map: mapnik.Map) => {
                 if (err) {
                     reject(err)
                 }
 
-                const mapnikImage: MapnikImage = new mapnik.Image(TILE_SIZE, TILE_SIZE)
-                const boundingBox: BoundingBox = mercator.xyzToMapnikEnvelope(+x, +y, +z)
+                const mapnikImage: mapnik.Image = new mapnik.Image(TILE_SIZE, TILE_SIZE)
+                const boundingBox: mapnik.BoundingBox = mercator.xyzToMapnikEnvelope(+x, +y, +z)
                 map.extent = boundingBox
-                map.render(mapnikImage, (err, image) => {
+                map.render(mapnikImage, (err: Error, image: mapnik.Image) => {
                     if (err) {
                         reject(err)
                     }
@@ -72,7 +54,7 @@ const getTileImage = (tileId: string, z: string, x: string, y: string): Buffer =
     return img
 }
 
-const saveTileImage = (image, tileId: string, z: string, x: string, y: string): void => {
+const saveTileImage = (image: mapnik.Image, tileId: string, z: string, x: string, y: string): void => {
     const dir = getTileDirPath(tileId, z, x)
     const pngPath = getTileImagePath(tileId, z, x, y)
 

@@ -1,12 +1,5 @@
 import * as mapnik from 'mapnik'
 
-export declare type BoundingBox = [number, number, number, number]
-
-declare interface MapnikProjection {
-    constructor(proj4: string)
-    forward(boundingBox: BoundingBox): BoundingBox
-}
-
 declare type LatitudeLongitude = [number, number]
 
 declare type Pixels = [number, number]
@@ -26,7 +19,7 @@ export class SphericalMercator {
     private RAD_TO_DEG: number
     private size: number
     private levels: number
-    private mercator: MapnikProjection
+    private mercator: mapnik.Projection
 
     constructor () {
         var size = 256
@@ -70,12 +63,12 @@ export class SphericalMercator {
         return [latitude, longitude]
     }
 
-    public xyzToMapnikEnvelope (x: number, y: number, zoom: number): BoundingBox {
+    public xyzToMapnikEnvelope (x: number, y: number, zoom: number): mapnik.BoundingBox {
         const latitudeLongitude: LatitudeLongitude = [x * this.size, (y + 1) * this.size]
         const pixels: Pixels = [(x + 1) * this.size, y * this.size]
         var boundingBoxPart1 = this.convertPixelsToLatitudeLongitude(latitudeLongitude, zoom)
         var boundingBoxPart2 = this.convertPixelsToLatitudeLongitude(pixels, zoom)
-        const boundingBox: BoundingBox = [boundingBoxPart1[0], boundingBoxPart1[1], boundingBoxPart2[0], boundingBoxPart2[1]]
+        const boundingBox: mapnik.BoundingBox = [boundingBoxPart1[0], boundingBoxPart1[1], boundingBoxPart2[0], boundingBoxPart2[1]]
         return this.mercator.forward(boundingBox)
     }
 }
