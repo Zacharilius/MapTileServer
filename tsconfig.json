@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
     "outDir": "./dist",
+    "module": "commonjs",
     "target": "es5",
     "noImplicitAny": true,
-    "jsx": "react",
-    "typeRoots" : ["./node_modules/@types", "./types"]
-
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "typeRoots" : ["./node_modules/@types", "./types"],
+    "jsx": "react"
   },
   "include": [
     "./src/server/**/*"
