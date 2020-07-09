@@ -2,7 +2,7 @@
 dist/
 
 # Project
-public/bundle.js
+public/*
 tiles/*
 
 # MacOS
