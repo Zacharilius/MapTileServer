@@ -71,7 +71,7 @@
     "eslint-plugin-react": "^7.20.3",
     "eslint-plugin-standard": "^4.0.1",
     "file-loader": "^6.0.0",
-    "jsdom": "10.1.0",
+    "jsdom": "16.5.0",
     "jsdom-global": "3.0.2",
     "mocha": "^7.2.0",
     "nodemon": "^2.0.4",
