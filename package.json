@@ -73,7 +73,7 @@
     "file-loader": "^6.0.0",
     "jsdom": "10.1.0",
     "jsdom-global": "3.0.2",
-    "mocha": "^7.2.0",
+    "mocha": "^10.2.0",
     "nodemon": "^2.0.4",
     "nyc": "^15.1.0",
     "proxyquire": "^2.1.3",
